@@ -328,3 +328,23 @@ class MetricsED(MetricsBase):
 
         return temp_acc
 
+    def cmd_er(self, state_gt, state_pred):
+        """
+        Calculates the Error Rate: ER = 1 - Accuracy
+        """
+
+        temp_acc = self.cmd_accuracy(state_gt, state_pred)
+        return 1 - temp_acc
+
+    def cmd_dps_pr(self, state_gt, state_pred):
+        """
+        Calculates the Distance to Perfect Score regarding Precision and Recall
+        DPS-PR = P**2 + R**2 - 2*(P + R) + 2
+        """
+
+        temp_precision = self.cmd_precision(state_gt, state_pred)
+        temp_recall = self.cmd_recall(state_gt, state_pred)
+
+        temp_dps = temp_precision**2 + temp_recall**2 - 2 * (temp_precision + temp_recall) + 2
+
+        return temp_dps
