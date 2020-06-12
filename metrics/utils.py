@@ -1,4 +1,4 @@
-from metrics.energy_estimation import MetricsEE
+# from metrics.energy_estimation import MetricsEE
 import pandas as pd
 import numpy as np
 
@@ -88,95 +88,33 @@ def aux_group_interval(data, options):
         return
 
 
-def check_metrics(df_gt, df_pred, metric_list, start_date='None', end_date='None', interval='None'):
-    """
-    :param df_gt: Ground-truth pandas DataFrame
-    :param df_pred: Predictions on a pandas DataFrame
-    :param start_date: Starting date for metric calculations
-    :param end_date: Ending date for metric calculations
-    :param metric_list: Set of metrics to calculate
-    :param interval: Interval to use while calculating metrics: 'None', 'Min', 'Hour', 'Day', 'Week', 'Year'
-    :return: Dictionary containing metrics for the interval specified
-    """
+def aux_get_size(state_gt):
+    '''
+    Gets the size of list/array for iteration
+    '''
 
-    # Check available columns based on the GT frame
-    col_list = []
-    for col in df_pred.columns:
-        if col in df_gt.columns:
-            col_list.append(col)
+    temp_length = 0
+    if isinstance(state_gt, list):
+        temp_length = len(state_gt)
+    else:
+        temp_length = state_gt.shape[0]
 
-    # Get the data within the time frame
-    temp_gt = df_gt[col_list]
-    temp_pred = df_pred[col_list]
-    temp_start = 'None'
-    temp_end = 'None'
+    return temp_length
 
-    if start_date != 'None':
-        temp_start = pd.to_datetime(start_date)
-    if end_date != 'None':
-        temp_end = pd.to_datetime(end_date)
 
-    if start_date == 'None' and end_date == 'None':
-        pass
+def aux_error_checking(state_gt, state_pred):
+    '''
+    Checks for list/array size incompatibility
+    '''
 
-    elif start_date == 'None' and end_date != 'None':
-        temp_gt = temp_gt[temp_gt.index < temp_end]
-        temp_pred = temp_pred[temp_pred.index < temp_end]
-
-    elif start_date != 'None' and end_date == 'None':
-        temp_gt = temp_gt[temp_gt.index >= temp_start]
-        temp_pred = temp_pred[temp_pred.index >= temp_start]
-
-    elif start_date != 'None' and end_date != 'None':
-        temp_gt = temp_gt[(temp_gt.index >= temp_start) & (temp_gt.index < temp_end)]
-        temp_pred = temp_pred[(temp_pred.index >= temp_start) & (temp_pred.index < temp_end)]
-
-    sampled_time = aux_group_interval(temp_gt, interval)
-    sampled_gt = {}
-    sampled_pred = {}
-    for timeframe in sampled_time:
-        sampled_gt[timeframe] = temp_gt[timeframe]
-        sampled_pred[timeframe] = temp_pred[timeframe]
-
-    # Go through a list of metrics to calculate
-    column_results = {}
-    metrics_class = MetricsEE()
-
-    unique_metrics_v1 = np.unique(np.array(metric_list))
-    if 'cep' in unique_metrics_v1:
-        unique_metrics_v1 = unique_metrics_v1[unique_metrics_v1 != 'cep']
-
-        unique_metrics_v1 = np.append(unique_metrics_v1, 'cep_c')
-        unique_metrics_v1 = np.append(unique_metrics_v1, 'cep_co')
-        unique_metrics_v1 = np.append(unique_metrics_v1, 'cep_cu')
-        unique_metrics_v1 = np.append(unique_metrics_v1, 'cep_o')
-        unique_metrics_v1 = np.append(unique_metrics_v1, 'cep_ozero')
-        unique_metrics_v1 = np.append(unique_metrics_v1, 'cep_u')
-        unique_metrics_v1 = np.append(unique_metrics_v1, 'cep_total')
-
-    unique_metrics_v2 = unique_metrics_v1.copy()
-    for metric in unique_metrics_v1:
-        if metrics_class.checkFunction(metric):
-            pass
+    if isinstance(state_gt, list):
+        if len(state_gt) != len(state_pred):
+            print('Ground truth and predicted arrays must be of the same size')
+            return True
         else:
-            unique_metrics_v2 = unique_metrics_v2[unique_metrics_v2 != metric]
-
-    for col in col_list:
-
-        metrics_results = {}
-        for calc in unique_metrics_v2:
-
-            results_timeframe = {}
-            for timeframe in sampled_time:
-                results_timeframe[timeframe] = metrics_class.callFunction(calc,
-                                                                          temp_gt[col][timeframe],
-                                                                          temp_pred[col][timeframe])
-
-            metrics_results[calc] = results_timeframe
-
-        metrics_results = pd.DataFrame(metrics_results)
-        metrics_results.index = pd.to_datetime(metrics_results.index)
-
-        column_results[col] = metrics_results
-
-    return column_results
+            return False
+    elif state_gt.shape[0] != state_pred.shape[0]:
+        print('Ground truth and predicted arrays must be of the same size')
+        return True
+    else:
+        return False

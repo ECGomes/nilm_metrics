@@ -4,62 +4,26 @@ import math
 
 import numpy as np
 import sklearn.metrics
+from metrics.metrics_base import MetricsBase
+from metrics.utils import aux_get_size, aux_error_checking
 
 
-# Auxiliary functions for error checking and list/array size
+class MetricsEE(MetricsBase):
 
-def aux_get_size(state_gt):
-    '''
-    Gets the size of list/array for iteration
-    '''
+    def __special_metrics__(self, metrics_list):
+        unique_metrics = metrics_list.copy()
+        if 'cep' in unique_metrics:
+            unique_metrics = unique_metrics[unique_metrics != 'cep']
 
-    temp_length = 0
-    if isinstance(state_gt, list):
-        temp_length = len(state_gt)
-    else:
-        temp_length = state_gt.shape[0]
+            unique_metrics = np.append(unique_metrics, 'cep_c')
+            unique_metrics = np.append(unique_metrics, 'cep_co')
+            unique_metrics = np.append(unique_metrics, 'cep_cu')
+            unique_metrics = np.append(unique_metrics, 'cep_o')
+            unique_metrics = np.append(unique_metrics, 'cep_ozero')
+            unique_metrics = np.append(unique_metrics, 'cep_u')
+            unique_metrics = np.append(unique_metrics, 'cep_total')
 
-    return temp_length
-
-
-def aux_error_checking(state_gt, state_pred):
-    '''
-    Checks for list/array size incompatibility
-    '''
-
-    if isinstance(state_gt, list):
-        if len(state_gt) != len(state_pred):
-            print('Ground truth and predicted arrays must be of the same size')
-            return True
-        else:
-            return False
-    elif state_gt.shape[0] != state_pred.shape[0]:
-        print('Ground truth and predicted arrays must be of the same size')
-        return True
-    else:
-        return False
-
-
-class MetricsEE:
-
-    def __init__(self):
-        return
-
-    def checkFunction(self, name):
-        fn = getattr(self, 'cmd_' + name, None)
-        if fn is not None:
-            return True
-        else:
-            print('Undefined metric call')
-            return False
-
-    def callFunction(self, name, gt, pred):
-        fn = getattr(self, 'cmd_' + name, None)
-        if fn is not None:
-            return fn(gt, pred)
-        else:
-            print('Undefined metric call')
-            return
+        return unique_metrics
 
     # Definition of metrics
     def cmd_re(self, state_gt, state_pred):
