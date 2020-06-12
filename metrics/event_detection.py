@@ -308,7 +308,7 @@ class MetricsED(MetricsBase):
         """
 
         temp_mcc = self.cmd_mcc(state_gt, state_pred)
-        temp_smcc = (1 - temp_mcc) / 2
+        temp_smcc = (1 + temp_mcc) / 2
 
         return temp_smcc
 
