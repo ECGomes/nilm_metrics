@@ -101,7 +101,11 @@ class MetricsED(MetricsBase):
         temp_precision = self.cmd_precision(state_gt, state_pred)
         temp_recall = self.cmd_recall(state_gt, state_pred)
 
-        temp_fscore = (1 + beta ** 2) * (temp_precision * temp_recall) / ((beta ** 2 * temp_precision) + temp_recall)
+        temp_fscore = 0
+        try:
+            temp_fscore = (1 + beta ** 2) * (temp_precision * temp_recall) / ((beta ** 2 * temp_precision) + temp_recall)
+        except ZeroDivisionError:
+            temp_fscore = np.nan
 
         return temp_fscore
 
@@ -276,7 +280,11 @@ class MetricsED(MetricsBase):
         """
 
         temp_conf_matrix = self.cmd_conf_mat(state_gt, state_pred)
-        temp_npv = temp_conf_matrix['TN'] / (temp_conf_matrix['TN'] + temp_conf_matrix['FN'])
+        temp_npv = 0
+        try:
+            temp_npv = temp_conf_matrix['TN'] / (temp_conf_matrix['TN'] + temp_conf_matrix['FN'])
+        except ZeroDivisionError:
+            temp_npv = np.nan
 
         return temp_npv
 
