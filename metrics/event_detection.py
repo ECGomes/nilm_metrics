@@ -265,6 +265,18 @@ class MetricsED(MetricsBase):
 
         return temp_bm
 
+    def cmd_gm(self, state_gt, state_pred):
+        """
+        Calculates the geometric mean: sqrt(TPR * TNR)
+        """
+
+        temp_tpr = self.cmd_tpr(state_gt, state_pred)
+        temp_tnr = self.cmd_tnr(state_gt, state_pred)
+
+        temp_gm = np.sqrt(temp_tpr * temp_tnr)
+
+        return temp_gm
+
     def cmd_ppv(self, state_gt, state_pred):
         """
         Calculates positive predictive value: Precision
