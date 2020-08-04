@@ -14,7 +14,7 @@ class MetricsEE(MetricsBase):
         unique_metrics = metrics_list.copy()
         if 'cep' in unique_metrics:
             unique_metrics = unique_metrics[unique_metrics != 'cep']
-            # cp, cop, cup, cx, op, ozp, up
+
             unique_metrics = np.append(unique_metrics, 'cep_c')
             unique_metrics = np.append(unique_metrics, 'cep_co')
             unique_metrics = np.append(unique_metrics, 'cep_cu')
