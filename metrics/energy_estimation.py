@@ -298,7 +298,30 @@ class MetricsEE(MetricsBase):
                     ozero += (state_pred[i] - state_gt[i])
                 co += state_gt[i]
 
-        return c, co, cu, o, ozero, u, total
+        cp, cop, cup, cx, op, ozp, up = 0, 0, 0, 0, 0, 0, 0
+
+        if total > 0:
+            cp = c / total
+            cop = co / total
+            cup = cu / total
+            cx = (c + co + cu) / total
+            op = o / total
+            ozp = ozero / total
+            up = u / total
+        else:
+            cp = 0
+            cop = 0
+            cozp = 0
+            cup = 0
+            if (c + co + cu) == total:
+                cx = 1
+            else:
+                cx = 0
+            op = 0
+            up = 0
+            ozp = ozero / state_gt.shape[0]
+
+        return c, co, cu, o, ozero, u, total, cp, cop, cup, cx, op, ozp, up
 
     def cmd_cep_c(self, state_gt, state_pred):
         """
