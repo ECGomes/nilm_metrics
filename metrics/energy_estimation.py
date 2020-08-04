@@ -14,7 +14,7 @@ class MetricsEE(MetricsBase):
         unique_metrics = metrics_list.copy()
         if 'cep' in unique_metrics:
             unique_metrics = unique_metrics[unique_metrics != 'cep']
-
+            # cp, cop, cup, cx, op, ozp, up
             unique_metrics = np.append(unique_metrics, 'cep_c')
             unique_metrics = np.append(unique_metrics, 'cep_co')
             unique_metrics = np.append(unique_metrics, 'cep_cu')
@@ -22,6 +22,13 @@ class MetricsEE(MetricsBase):
             unique_metrics = np.append(unique_metrics, 'cep_ozero')
             unique_metrics = np.append(unique_metrics, 'cep_u')
             unique_metrics = np.append(unique_metrics, 'cep_total')
+            unique_metrics = np.append(unique_metrics, 'cep_cp')
+            unique_metrics = np.append(unique_metrics, 'cep_cop')
+            unique_metrics = np.append(unique_metrics, 'cep_cup')
+            unique_metrics = np.append(unique_metrics, 'cep_cx')
+            unique_metrics = np.append(unique_metrics, 'cep_op')
+            unique_metrics = np.append(unique_metrics, 'cep_ozp')
+            unique_metrics = np.append(unique_metrics, 'cep_up')
 
         return unique_metrics
 
@@ -364,6 +371,48 @@ class MetricsEE(MetricsBase):
         Returns the total energy for other calculations
         """
         return self.cmd_cep(state_gt, state_pred)[6]
+
+    def cmd_cep_cp(self, state_gt, state_pred):
+        """
+        Returns the percentage of correctly estimated energy
+        """
+        return self.cmd_cep(state_gt, state_pred)[7]
+
+    def cmd_cep_cop(self, state_gt, state_pred):
+        """
+        Returns the percentage of correctly estimated energy with overestimation
+        """
+        return self.cmd_cep(state_gt, state_pred)[8]
+
+    def cmd_cep_cup(self, state_gt, state_pred):
+        """
+        Returns the percentage of correctly estimated energy with underestmation
+        """
+        return self.cmd_cep(state_gt, state_pred)[9]
+
+    def cmd_cep_cx(self, state_gt, state_pred):
+        """
+        Returns the percentage of correctly estimated energy with other components
+        """
+        return self.cmd_cep(state_gt, state_pred)[10]
+
+    def cmd_cep_op(self, state_gt, state_pred):
+        """
+        Returns the percentage of overtimation
+        """
+        return self.cmd_cep(state_gt, state_pred)[11]
+
+    def cmd_cep_ozp(self, state_gt, state_pred):
+        """
+        Returns the percentage of overestimation on GT == 0
+        """
+        return self.cmd_cep(state_gt, state_pred)[12]
+
+    def cmd_cep_up(self, state_gt, state_pred):
+        """
+        Returns the percentage of underestimation
+        """
+        return self.cmd_cep(state_gt, state_pred)[13]
 
     def cmd_MRuMR_macro(self, state_gt, state_pred):
         """
