@@ -49,7 +49,8 @@ class MetricsBase:
         unique_metrics_v2 = self.__remove_undefinedMetrics__(unique_metrics_v1)
 
         # Calculate the metrics
-        column_results = self.__calculate_metrics__(col_list, sampled_time, temp_gt, temp_pred, unique_metrics_v2)
+        column_results = self.__calculate_metrics__(col_list, sampled_time, temp_gt, temp_pred,
+                                                    unique_metrics_v2, interval)
         results = self.__cleanup_results(column_results)
 
         return results
@@ -91,7 +92,7 @@ class MetricsBase:
     def __special_metrics__(self, metrics_list):
         return metrics_list
 
-    def __calculate_metrics__(self, col_list, sampled_time, temp_gt, temp_pred, metric_list):
+    def __calculate_metrics__(self, col_list, sampled_time, temp_gt, temp_pred, metric_list, interval):
         column_results = {}
         for col in col_list:
 
@@ -100,9 +101,18 @@ class MetricsBase:
 
                 results_timeframe = {}
                 for timeframe in sampled_time:
-                    results_timeframe[timeframe] = self.callFunction(calc,
-                                                                     temp_gt[col][timeframe],
-                                                                     temp_pred[col][timeframe])
+
+                    if interval == 'Week':
+                        if len(timeframe) > 1:
+                            results_timeframe[timeframe[0]] = self.callFunction(calc,
+                                                                                temp_gt[col][timeframe[0]:timeframe[1]],
+                                                                                temp_pred[col][timeframe[0]:timeframe[1]])
+                        else:
+                            pass
+                    else:
+                        results_timeframe[timeframe] = self.callFunction(calc,
+                                                                         temp_gt[col][timeframe],
+                                                                         temp_pred[col][timeframe])
 
                 metrics_results[calc] = results_timeframe
 
